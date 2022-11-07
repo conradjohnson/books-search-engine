@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
-
-import { getMe, deleteBook } from '../utils/API';
+// Removed REST API calls.
+//import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
+
+//added GraphQL tooling, queries and mutations
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
@@ -11,9 +13,7 @@ import { REMOVE_BOOK } from '../utils/mutations';
 const SavedBooks = () => {
   // const [userData, setUserData] = useState({});
 
-  
-  
-
+  //get user data query for book delete and remove book mutation
   const { loading, data } = useQuery(GET_ME);
   const [removeBook, { error }] = useMutation(REMOVE_BOOK);
 
@@ -21,12 +21,13 @@ const SavedBooks = () => {
   
   const userData = user;
   const userDataLength = Object.keys(userData).length;
+ 
 
-  
-
+  //status display 
   if (loading) {
     return <div>Loading...</div>;
   }
+  // if user isn't logged in, display message
   if (!user?.username) {
     return (
       <h4>
@@ -47,12 +48,13 @@ const SavedBooks = () => {
     
 
     try {
+      //remove book mutation execution
       const { data } = await removeBook( {
         variables: { userId: userData._id,  bookId: bookId }
       });
        // upon success, remove book's id from localStorage
        removeBookId(bookId);
-       // setUserData(updatedUser);
+       
 
     } catch (e) {
       console.error(e);

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+// removed savebook REST call 
+import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+
+// new graphql tooling, queries and mutations
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
 import { SAVE_BOOK } from '../utils/mutations';
@@ -17,9 +20,11 @@ const SearchBooks = () => {
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
+  //get user data from graphql query
   const {  data } = useQuery(GET_ME);
   const user = data?.me  || {};
   const userData = user;
+
   // SaveBook Mutation
   const [saveBook, { error }] = useMutation(SAVE_BOOK);
   
@@ -71,12 +76,12 @@ const SearchBooks = () => {
 
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-
+    //break if not logged in
     if (!token) {
       return false;
     }
     console.log("User:"+ user);
-
+    //save book mutation execution
     try {
       const { data } = await saveBook( {
         variables: { 

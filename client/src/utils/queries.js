@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 
+//get user information query for logged in user
 export const GET_ME = gql`
   query me {
     me {

@@ -26,11 +26,13 @@ Google Books Search is a REACT application that interfaces with [Google Book API
 
 Demo:
 
-![Demo Link]()
+[Demo Link]()
 
-Screen Shot:
+Screen Shots:
 
 ![Screen Shot](img/screen1.png)
+![Screen Shot](img/screen2.png)
+![Screen Shot](img/screen3.png)
 
 ## Installation
 ***
