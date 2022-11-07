@@ -4,8 +4,9 @@ import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'reac
 import Auth from '../utils/auth';
 import { saveBook, searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
+import { SAVE_BOOK } from '../utils/mutations';
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -16,6 +17,14 @@ const SearchBooks = () => {
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
+  const {  data } = useQuery(GET_ME);
+  const user = data?.me  || {};
+  const userData = user;
+  // SaveBook Mutation
+  const [saveBook, { error }] = useMutation(SAVE_BOOK);
+  
+  
+  
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
@@ -38,13 +47,14 @@ const SearchBooks = () => {
       }
 
       const { items } = await response.json();
-
+    
       const bookData = items.map((book) => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
         title: book.volumeInfo.title,
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
+        link: book.volumeInfo.infoLink
       }));
 
       setSearchedBooks(bookData);
@@ -65,13 +75,21 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
+    console.log("User:"+ user);
 
     try {
-      const response = await saveBook(bookToSave, token);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      const { data } = await saveBook( {
+        variables: { 
+            userId: userData._id,  
+            bookId: bookToSave.bookId,
+            authors: bookToSave.authors,
+            title: bookToSave.title,
+            description: bookToSave.description,
+            image: bookToSave.image,
+            link: bookToSave.link
+          }
+      });
+     
 
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
